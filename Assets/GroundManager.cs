@@ -18,26 +18,25 @@ public class GroundManager : MonoBehaviour
 	{
 	}
 
-	public static void CreateCube(Vector3 pos)
+	public static GameObject CreateCube(Vector3 pos)
 	{
 		GameObject cube = Instantiate(Resources.Load("GroundCube")) as GameObject;
 		cube.transform.localScale = new Vector3(GridManager.tileSize, GridManager.tileSize, GridManager.tileSize);
-		cube.transform.position = pos; //+ new Vector3(GridManager.tileSize/2.0f, GridManager.tileSize/2.0f, GridManager.tileSize/2.0f);
+        cube.transform.position = pos;
 		groundCubes.Add(cube);
+        return cube;
 	}
 
 
 	private void CreateGround()
 	{
-		float lastHeightChange = 0.0f;
-		float heightChangeSpeed = 0.0f;
 		for(float x = -size/2.0f; x < size / 2.0f; x += GridManager.tileSize)
 		{
 			for(float z = -size/2.0f; z < size / 2.0f; z += GridManager.tileSize)
 			{
-				float gridx = GridManager.GetCoord(x);
-				float gridz = GridManager.GetCoord(z);
-				CreateCube(new Vector3(gridx, groundHeightPos + lastHeightChange + Random.Range(-heightChangeSpeed, heightChangeSpeed), gridz));
+                Vector3 pos = GridManager.GetPoint( new Vector3(x, groundHeightPos, z) );
+                pos += GridManager.halfTileOffset;
+                CreateCube(pos);
 			}
 		}
 	}

@@ -35,9 +35,7 @@ public class PlayerBuilding : MonoBehaviour {
 		{
 			Vector3 cubePos = hit.point + hit.normal * 0.1f;
 			Vector3 gridedPos = GridManager.GetPoint(cubePos);
-			Debug.Log ("REAL: " + cubePos + ", GRIDED: " + gridedPos);
-			Debug.DrawLine(hit.point, hit.point + hit.normal * 9999.9f, Color.blue, 999.0f, false);
-			Debug.DrawLine(transform.position, hit.point, Color.green, 999.0f, false);
+            gridedPos += GridManager.halfTileOffset;
 			GroundManager.CreateCube(gridedPos);
 		}
 	}
