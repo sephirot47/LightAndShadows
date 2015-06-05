@@ -3,41 +3,46 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour 
 {
-	[SerializeField]
-	private static float gravity = -5.0f;
-
-	private float speedY = 0.0f;
 	private CharacterController controller;
 
 	public Vector3 rotation;
-	public float rotationSpeedHorizontal = 100.0f, rotationSpeedVertical = 45.0f, 
-				 rotationVerticalLimitMin = -45.0f, rotationVerticalLimitMax = 45.0f;
-	public float movementSpeed = 5.0f;
-	public float jumpForce = 5.0f;
+	public float rotationSpeedHorizontal = 400.0f, rotationSpeedVertical = 300.0f, 
+				 rotationVerticalLimitMin = -89.0f, rotationVerticalLimitMax = 89.0f;
+    public float movementSpeedMax = 14.0f, movementAcc = 0.25f;
+    public float floatingSpeedMax = 0.25f, floatingAcc = 0.01f;
+
+    private float movementSpeed = 0.0f, floatingSpeed = 0.0f;
 
 	void Start () 
 	{
 		controller = GetComponent<CharacterController>();
 	}
 	
-	void Update () 
-	{
-		float mousex = Input.GetAxis("Mouse X") * Time.deltaTime * rotationSpeedHorizontal;
-		float mousey = Input.GetAxis("Mouse Y") * Time.deltaTime * rotationSpeedVertical;
-		rotation += new Vector3(-mousey, mousex, 0.0f);
-		rotation.x = Mathf.Clamp (rotation.x, rotationVerticalLimitMin, rotationVerticalLimitMax);
-		Camera.main.transform.rotation = Quaternion.Euler(rotation);
+	void Update ()
+    {
+        float mousex = Input.GetAxis("Mouse X") * Time.deltaTime * rotationSpeedHorizontal;
+        float mousey = Input.GetAxis("Mouse Y") * Time.deltaTime * rotationSpeedVertical;
+        rotation += new Vector3(-mousey, mousex, 0.0f);
+        rotation.x = Mathf.Clamp(rotation.x, rotationVerticalLimitMin, rotationVerticalLimitMax);
+        transform.rotation = Quaternion.Euler(rotation);
 
-		float x = Input.GetAxis("Horizontal");
-		float y = Input.GetAxis("Vertical");
+        if (Input.GetKey(KeyCode.Q)) floatingSpeed += floatingAcc;
+        else if (Input.GetKey(KeyCode.E)) floatingSpeed -= floatingAcc;
+        else floatingSpeed = 0.0f;
 
-		speedY += gravity;
-		if(controller.isGrounded) speedY = 0.0f;
+        float x = Input.GetAxis("Horizontal");
+        float y = Input.GetAxis("Vertical");
+        if (x == 0.0f && y == 0.0f) movementSpeed = 0.0f;
+        else movementSpeed += movementAcc;
 
-		Vector3 movement = Vector3.zero;
-		movement += ( PlaneVector(Camera.main.transform.forward) * y).normalized * Time.deltaTime * movementSpeed;
-		movement += ( PlaneVector(Camera.main.transform.right)   * x).normalized * Time.deltaTime * movementSpeed;
-		movement += new Vector3(0, speedY, 0);
+        movementSpeed = Mathf.Clamp(movementSpeed, -movementSpeedMax, movementSpeedMax);
+        floatingSpeed = Mathf.Clamp(floatingSpeed, -floatingSpeedMax, floatingSpeedMax);
+
+        Vector3 movement = Vector3.zero;
+        movement += transform.right * x * Time.deltaTime * movementSpeed;
+        movement += transform.forward * y * Time.deltaTime * movementSpeed;
+        movement += Vector3.up * floatingSpeed;
+        
 		controller.Move(movement);
 	}
 

@@ -18,15 +18,45 @@ public class GroundManager : MonoBehaviour
 	{
 	}
 
-	public static GameObject CreateCube(Vector3 pos)
-	{
-		GameObject cube = Instantiate(Resources.Load("GroundCube")) as GameObject;
+    private static GameObject BuildCube(GameObject cube, Vector3 pos)
+    {
 		cube.transform.localScale = new Vector3(GridManager.tileSize, GridManager.tileSize, GridManager.tileSize);
-        cube.transform.position = pos;
+
+        Vector3 gridedPos = GridManager.GetPoint(pos);
+        gridedPos += GridManager.halfTileOffset;
+        cube.transform.position = gridedPos;
+
 		groundCubes.Add(cube);
         return cube;
+    }
+
+	public static GameObject CreateGroundCube(Vector3 pos)
+	{
+        if (!CanBuildCube(pos)) return null;
+		GameObject cube = Instantiate(Resources.Load("GroundCube")) as GameObject;
+        return BuildCube(cube, pos);
 	}
 
+    public static GameObject CreateBoundsCube(Vector3 pos)
+    {
+        if (!CanBuildCube(pos)) return null;
+        GameObject cube = Instantiate(Resources.Load("BoundsCube")) as GameObject;
+        return BuildCube(cube, pos);
+    }
+
+    public static GameObject CreateBuiltCube(Vector3 pos)
+    {
+        if (!CanBuildCube(pos)) return null;
+        GameObject cube = Instantiate(Resources.Load("BuiltCube")) as GameObject;
+        return BuildCube(cube, pos);
+    }
+
+
+    private static bool CanBuildCube(Vector3 pos)
+    {
+        Vector3 centeredInGridTilePos = GridManager.GetPoint(pos) + GridManager.halfTileOffset;
+        return !Physics.CheckSphere(centeredInGridTilePos, GridManager.tileSize * 0.49f);
+    }
 
 	private void CreateGround()
 	{
@@ -36,7 +66,7 @@ public class GroundManager : MonoBehaviour
 			{
                 Vector3 pos = GridManager.GetPoint( new Vector3(x, groundHeightPos, z) );
                 pos += GridManager.halfTileOffset;
-                CreateCube(pos);
+                CreateGroundCube(pos);
 			}
 		}
 	}

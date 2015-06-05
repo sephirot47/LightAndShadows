@@ -3,13 +3,20 @@ using System.Collections;
 
 public class GroundCube : MonoBehaviour
 {
+
 	void Start () 
 	{
-		GetComponent<Renderer>().material.color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
+        float lum = Random.Range(0.9f, 1.0f);
+        GetComponent<Renderer>().material.color = new Color(lum, lum, lum);
     }
 	
 	void Update () 
     {
         
 	}
+
+    public bool IsRemovableByPlayer()
+    {
+        return false;
+    }
 }

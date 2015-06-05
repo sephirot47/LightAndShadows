@@ -11,20 +11,12 @@ public class PlayerBuilding : MonoBehaviour {
 	{
 		if(Input.GetMouseButtonDown(1)) //Elimina cubo
 		{
-			DestroyTargetCube();
+			RemoveCube();
 		}
 		else if(Input.GetMouseButtonDown(0)) //Pon cubo
 		{
 			PutCube();
 		}
-		else
-		{
-			PutSampleCube();
-		}
-	}
-
-	private void PutSampleCube()
-	{
 	}
 
 	private void PutCube()
@@ -34,19 +26,25 @@ public class PlayerBuilding : MonoBehaviour {
 		if(Physics.Raycast(ray, out hit, 100.9f))
 		{
 			Vector3 cubePos = hit.point + hit.normal * 0.1f;
-			Vector3 gridedPos = GridManager.GetPoint(cubePos);
-            gridedPos += GridManager.halfTileOffset;
-			GroundManager.CreateCube(gridedPos);
+			GroundManager.CreateBuiltCube(cubePos);
 		}
 	}
 
-	private void DestroyTargetCube()
+	private void RemoveCube()
 	{
 		Ray ray = new Ray (transform.position, Camera.main.transform.forward);
 		RaycastHit hit = new RaycastHit();
 		if(Physics.Raycast(ray, out hit, 100.9f))
-		{
-			Destroy(hit.collider.gameObject);
+        {
+            GameObject go = hit.collider.gameObject;
+            ICube cube = (ICube) go.GetComponent( typeof(ICube) );
+            if(cube != null)
+            {
+                if (cube.IsRemovableByPlayer())
+                {
+                    Destroy(go);
+                }
+            }
 		}
 	}
 }
