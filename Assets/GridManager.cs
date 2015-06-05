@@ -5,12 +5,18 @@ public class GridManager
 {
 	public static float tileSize = 1.0f;
 
+	public static float GetCoord(float a)
+	{
+		return ((int) a ) / tileSize * tileSize + tileSize/2.0f;
+	}
+
 	public static Vector3 GetPoint(Vector3 point)
 	{
 		Vector3 result = new Vector3();
-		result.x = ((int)point.x) / tileSize * tileSize;
-		result.y = ((int)point.y) / tileSize * tileSize;
-		result.z = ((int)point.z) / tileSize * tileSize;
+		result.x = GetCoord(point.x);
+		result.y = GetCoord(point.y);
+		result.z = GetCoord(point.z);
+		Debug.DrawLine(result, result + Vector3.up, Color.red, 9999.9f, false);
 		return result;
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class GroundManager : MonoBehaviour 
 {
-	public static float groundHeightPos = -5.0f;
+	public static float groundHeightPos = 0.0f;
 	public static float size = 30.0f;
 	private static List<GameObject> groundCubes;
 
@@ -22,9 +22,10 @@ public class GroundManager : MonoBehaviour
 	{
 		GameObject cube = Instantiate(Resources.Load("GroundCube")) as GameObject;
 		cube.transform.localScale = new Vector3(GridManager.tileSize, GridManager.tileSize, GridManager.tileSize);
-		cube.transform.position = pos;
+		cube.transform.position = pos; //+ new Vector3(GridManager.tileSize/2.0f, GridManager.tileSize/2.0f, GridManager.tileSize/2.0f);
 		groundCubes.Add(cube);
 	}
+
 
 	private void CreateGround()
 	{
@@ -34,7 +35,9 @@ public class GroundManager : MonoBehaviour
 		{
 			for(float z = -size/2.0f; z < size / 2.0f; z += GridManager.tileSize)
 			{
-				CreateCube(new Vector3(x, groundHeightPos + lastHeightChange + Random.Range(-heightChangeSpeed, heightChangeSpeed), z));
+				float gridx = GridManager.GetCoord(x);
+				float gridz = GridManager.GetCoord(z);
+				CreateCube(new Vector3(gridx, groundHeightPos + lastHeightChange + Random.Range(-heightChangeSpeed, heightChangeSpeed), gridz));
 			}
 		}
 	}
