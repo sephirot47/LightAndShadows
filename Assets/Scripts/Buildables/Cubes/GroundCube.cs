@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GroundCube : MonoBehaviour, ICube
+public class GroundCube : MonoBehaviour
 {
     public bool rayDebug = false;
 
     private int raycastLayer;
 
-	void Start () 
-	{
+	public void Start ()
+    {
         float lum = Random.Range(0.8f, 0.9f);
         GetComponent<Renderer>().material.color = new Color(lum, lum, lum);
 
         raycastLayer = 1 << LayerMask.NameToLayer("Cubes");
     }
-	
-	void Update () 
+
+    public void Update()
     {
         bool receivingLight = ReceivesAnyLight();
 
@@ -30,10 +30,6 @@ public class GroundCube : MonoBehaviour, ICube
          //   Debug.DrawRay(transform.position, Vector3.up, Color.red, 0.1f, true);
         }
 	}
-
-    public void OnTargetEnter() { }
-    public void OnTargetExits() { }
-    public bool IsRemovableByPlayer() { return false; }
 
     public bool ReceivesAnyLight()
     {

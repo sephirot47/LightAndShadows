@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GroundManager : MonoBehaviour 
+public class BuildingsManager : MonoBehaviour 
 {
-    public enum CubeType
+    public enum BuildingType
     {
-        BoundsCube, SampleCube, GroundCube, BuiltCube
+        GroundCube, BuiltCube
     };
 
 	public static float groundHeightPos = 0.0f;
@@ -23,13 +23,13 @@ public class GroundManager : MonoBehaviour
 	{
 	}
 
-    public static GameObject PutCube(CubeType cubeType, Vector3 pos)
+    public static GameObject PutCube(BuildingType buildingType, Vector3 pos)
     {
         if (!CanPutCube(pos)) return null;
 
-        string resName = GetCubeTypeResourceName(cubeType);
+        string resName = GetCubeTypeResourceName(buildingType);
         GameObject cube = Instantiate(Resources.Load(resName)) as GameObject;
-        if (cubeType == CubeType.GroundCube) groundCubes.Add(cube);
+        if (buildingType == BuildingType.GroundCube) groundCubes.Add(cube);
 
 		cube.transform.localScale = new Vector3(GridManager.tileSize, GridManager.tileSize, GridManager.tileSize);
 
@@ -39,14 +39,12 @@ public class GroundManager : MonoBehaviour
         return cube;
     }
 
-    private static string GetCubeTypeResourceName(CubeType cubeType)
+    private static string GetCubeTypeResourceName(BuildingType buildingType)
     {
-        switch(cubeType)
+        switch (buildingType)
         {
-            case CubeType.BoundsCube: return "BoundsCube";
-            case CubeType.SampleCube: return "SampleCube";
-            case CubeType.GroundCube: return "GroundCube";
-            case CubeType.BuiltCube:  return "BuiltCube";
+            case BuildingType.GroundCube: return "GroundCube";
+            case BuildingType.BuiltCube: return "BuiltCube";
         }
 
         return "BuiltCube";
@@ -65,7 +63,7 @@ public class GroundManager : MonoBehaviour
 			for(float z = -size/2.0f; z < size / 2.0f; z += GridManager.tileSize)
 			{
                 Vector3 pos = new Vector3(x, groundHeightPos, z);
-                PutCube(CubeType.GroundCube, pos);
+                PutCube(BuildingType.GroundCube, pos);
 			}
 		}
 	}
