@@ -14,7 +14,6 @@ public class Buildable : MonoBehaviour
 
     public virtual void Start()
     {
-        originalColor = GetComponent<Renderer>().material.color;
     }
 
     public virtual void Update()
@@ -33,7 +32,8 @@ public class Buildable : MonoBehaviour
 
     public virtual void OnBuildingFinished() //Cuando el building se ha puesto
     {
-        GetComponent<Renderer>().material = originalMaterial;
+        if (originalMaterial != null)
+            GetComponent<Renderer>().material = originalMaterial;
         GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 
         Collider[] colls = GetComponents<Collider>();
@@ -49,7 +49,10 @@ public class Buildable : MonoBehaviour
     public virtual void OnTargetExits()
     {
         if (targetable)
-            GetComponent<Renderer>().material.color = originalColor;
+        {
+            if (originalMaterial != null)
+                GetComponent<Renderer>().material.color = originalMaterial.color;
+        }
     }
 
     public bool IsRemovableByPlayer()

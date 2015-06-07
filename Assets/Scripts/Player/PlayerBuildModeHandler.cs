@@ -13,27 +13,34 @@ public class PlayerBuildModeHandler : MonoBehaviour
         p = GetComponent<Player>();
 	}
 	
+    public void OnModeChanged()
+    {
+        if (currentBuilding != null) Destroy(currentBuilding);
+        currentBuilding = null;
+    }
+
 	void Update () 
     {
-        if (p.currentMode != Player.Mode.PutCubeMode)
+        if (p.currentMode != Player.Mode.PutCubeMode && p.currentMode != Player.Mode.PutLightMode)
         {
-            if (currentBuilding != null)
-            {
-                Destroy(currentBuilding);
-            }
             return;
         }
 
         if (currentBuilding == null)
         {
-            currentBuilding = PutCube();
+            BuildingsManager.BuildingType buildingType = BuildingsManager.BuildingType.BuiltCube;
+            if (p.currentMode == Player.Mode.PutCubeMode) buildingType = BuildingsManager.BuildingType.BuiltCube;
+            else if (p.currentMode == Player.Mode.PutLightMode) buildingType = BuildingsManager.BuildingType.BuiltLight;
+
+            currentBuilding = PutBuilding(buildingType);
+
             if(currentBuilding != null)
                 currentBuilding.GetComponent<Buildable>().OnBuildingStarted();
         }
 
         UpdateCurrentBuildingPosition();
 
-        if (Input.GetMouseButtonDown(0) && currentBuilding != null) //Pon cubo
+        if (Input.GetMouseButtonDown(0) && currentBuilding != null) //Pon building
         {
             currentBuilding.GetComponent<Buildable>().OnBuildingFinished();
             currentBuilding = null;
@@ -56,14 +63,14 @@ public class PlayerBuildModeHandler : MonoBehaviour
         else currentBuilding.SetActive(false);
     }
 
-    private GameObject PutCube()
+    private GameObject PutBuilding(BuildingsManager.BuildingType buildingType)
     {
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit = new RaycastHit();
         if (Physics.Raycast(ray, out hit, 999.9f, Player.raycastLayer))
         {
             Vector3 cubePos = hit.point + hit.normal * 0.1f;
-            return BuildingsManager.PutCube(BuildingsManager.BuildingType.BuiltCube, cubePos);
+            return BuildingsManager.PutBuilding(buildingType, cubePos);
         }
         return null;
     }

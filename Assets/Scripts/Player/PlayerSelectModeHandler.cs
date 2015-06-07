@@ -4,6 +4,8 @@ using System.Collections;
 public class PlayerSelectModeHandler : MonoBehaviour 
 {
     private Player p;
+    private Buildable targetedBuildable = null;
+
     void Start()
     {
         p = GetComponent<Player>();
@@ -14,34 +16,48 @@ public class PlayerSelectModeHandler : MonoBehaviour
     {
         if (p.currentMode == Player.Mode.SelectMode)
         {
-            GameObject targetedBuilding = GetTargetedBuilding();
-            
-            //if (currentTargetedCube == null && targetedCube != null)
-            //      targetedCube.OnTargetExits();
+            Buildable currentTargetedBuildable = GetTargetedBuildable();
 
-            // if (currentTargetedCube != null && currentTargetedCube != targetedCube)
-            //   {
-            //          if (targetedCube != null) targetedCube.OnTargetExits();
-            //       currentTargetedCube.OnTargetEnter();
-            //       targetedCube = currentTargetedCube;
-            //    }
+            if (currentTargetedBuildable == null && targetedBuildable != null)
+                targetedBuildable.GetComponent<Buildable>().OnTargetExits();
 
-
-            if (Input.GetMouseButton(1) && targetedBuilding != null) //Elimina cubo
+            if (currentTargetedBuildable != targetedBuildable)
             {
-                RemoveBuilding(targetedBuilding);
+                if (targetedBuildable != null)
+                {
+                    targetedBuildable.OnTargetExits();
+                    targetedBuildable = currentTargetedBuildable;
+                }
+
+                if (currentTargetedBuildable != null)
+                {
+                    currentTargetedBuildable.OnTargetEnters();
+                }
             }
+
+
+            if (Input.GetMouseButtonDown(1) && currentTargetedBuildable != null) //Elimina building
+            {
+                RemoveBuilding(currentTargetedBuildable.gameObject);
+            }
+
+            targetedBuildable = currentTargetedBuildable;
+        }
+        else if (targetedBuildable != null)
+        {
+            targetedBuildable.OnTargetExits();
+            targetedBuildable = null;
         }
 	}
 
-    private GameObject GetTargetedBuilding()
+    private Buildable GetTargetedBuildable()
     {
         Ray ray = new Ray (transform.position, transform.forward);
         RaycastHit hit = new RaycastHit();
         if (Physics.Raycast(ray, out hit, 999.9f, Player.raycastLayer))
         {
             GameObject go = hit.collider.gameObject;
-            if(go.GetComponent<Buildable>() != null) return go;
+            return go.GetComponent<Buildable>();
         }
         return null;
     }

@@ -6,7 +6,7 @@ public class BuildingsManager : MonoBehaviour
 {
     public enum BuildingType
     {
-        GroundCube, BuiltCube
+        GroundCube, BuiltCube, BuiltLight
     };
 
 	public static float groundHeightPos = 0.0f;
@@ -23,11 +23,11 @@ public class BuildingsManager : MonoBehaviour
 	{
 	}
 
-    public static GameObject PutCube(BuildingType buildingType, Vector3 pos)
+    public static GameObject PutBuilding(BuildingType buildingType, Vector3 pos)
     {
-        if (!CanPutCube(pos)) return null;
+        if (!CanPutBuilding(pos)) return null;
 
-        string resName = GetCubeTypeResourceName(buildingType);
+        string resName = GetBuildingTypeResourceName(buildingType);
         GameObject cube = Instantiate(Resources.Load(resName)) as GameObject;
         if (buildingType == BuildingType.GroundCube) groundCubes.Add(cube);
 
@@ -39,18 +39,19 @@ public class BuildingsManager : MonoBehaviour
         return cube;
     }
 
-    private static string GetCubeTypeResourceName(BuildingType buildingType)
+    private static string GetBuildingTypeResourceName(BuildingType buildingType)
     {
         switch (buildingType)
         {
             case BuildingType.GroundCube: return "GroundCube";
             case BuildingType.BuiltCube: return "BuiltCube";
+            case BuildingType.BuiltLight: return "BuiltLight";
         }
 
         return "BuiltCube";
     }
 
-    private static bool CanPutCube(Vector3 pos)
+    private static bool CanPutBuilding(Vector3 pos)
     {
         Vector3 centeredInGridTilePos = GridManager.GetPoint(pos) + GridManager.halfTileOffset;
         return !Physics.CheckSphere(centeredInGridTilePos, GridManager.tileSize * 0.49f);
@@ -63,7 +64,7 @@ public class BuildingsManager : MonoBehaviour
 			for(float z = -size/2.0f; z < size / 2.0f; z += GridManager.tileSize)
 			{
                 Vector3 pos = new Vector3(x, groundHeightPos, z);
-                PutCube(BuildingType.GroundCube, pos);
+                PutBuilding(BuildingType.GroundCube, pos);
 			}
 		}
 	}
